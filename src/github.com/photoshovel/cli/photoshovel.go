@@ -61,4 +61,37 @@ func main() {
 		// Have logs written to disk before exiting.
 		defer logWriter.Flush()
 	}
+	
+	// TODO: Create command line options to specify source and target for 
+	// TODO: photo migration.
+	
+	// TODO: Prompt for photo service authentication if API access keys 
+	// TODO: have not been specified in the configuration file.
+	
+	// TODO: Have Go routine, TaskMaster, running for walking the source photo service.
+	// TODO: As it finds files to migrate, writes a migrate job object 
+	// TODO: to the downloader channel.
+	
+	// TODO: Downloader Go routines consume migrate jobs from the downloader 
+	// TODO: channel.  For each job, get photo's metadata (album, caption, 
+	// TODO: camera info, location, tags, etc) and download the image data 
+	// TODO: to a local temporary location.
+	
+	// TODO: Upon download completion, Download Go routines revise migrate job 
+	// TODO: object to contain photo metadata and path to temporary image data 
+	// TODO: file.  Migrate job then gets written to uploader channel.
+	
+	// TODO: Uploader Go routines consume migrate jobs from the uploader 
+	// TODO: channel.  For each job, upload the image data+metadata to the target 
+	// TODO: photo service.  Delete the temporary image data file upon success.
+
+	// TODO: Once TaskMaster finishes running, write terminate sentinel jobs 
+	// TODO: to the downloader and uploader channels equal to the number of 
+	// TODO: Downloader and Uploader Go routines in operation.
+	
+	// TODO: Downloader and Uploader Go routines will consume terminate sentinel 
+	// TODO: jobs and stop running.
+	
+	// TODO: Once all Downloader adn Uploader Go routines have exited, end the 
+	// TODO: program.
 }

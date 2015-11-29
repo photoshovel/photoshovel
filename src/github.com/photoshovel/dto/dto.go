@@ -7,10 +7,15 @@ import (
 type PhotoShovelConfig struct {
 	LogDirectory	string
 	TraceLevelLogging bool
+	TempFileDirectory string
+	NumberOfDownloaders int
+	NumberOfUploaders int
 }
 
 func (psc *PhotoShovelConfig) String() string {
 	return fmt.Sprintf("PhotoShovelConfig:: Log Directory: %q, " +
-		"Trace Level Logging: %v", 
-		psc.LogDirectory, psc.TraceLevelLogging)
+		"Trace Level Logging: %v, Temp File Directory: %q, Num Downloaders: %v," +
+		"Num Uploaders: %v", 
+		psc.LogDirectory, psc.TraceLevelLogging, psc.TempFileDirectory, 
+		psc.NumberOfDownloaders, psc.NumberOfUploaders)
 }
