@@ -19,3 +19,11 @@ func (psc *PhotoShovelConfig) String() string {
 		psc.LogDirectory, psc.TraceLevelLogging, psc.TempFileDirectory, 
 		psc.NumberOfDownloaders, psc.NumberOfUploaders)
 }
+
+type AmazonCloudDriveConfig struct {
+	TargetFolder string
+}
+
+type PicasaWebConfig struct {
+	TargetAlbumPrefix string
+}

@@ -19,16 +19,22 @@ var (
 	Error   *log.Logger
 )
 
-func LoadConfig(configFilePath *string) (*dto.PhotoShovelConfig, error) {
+func LoadConfig(configFilePath *string) (*dto.PhotoShovelConfig, 
+										 *dto.AmazonCloudDriveConfig, 
+										 *dto.PicasaWebConfig, 
+										 error) {
 	if *configFilePath == "" {
-		return nil, nil
+		return nil, nil, nil, nil
 	}
 	
-	config := struct{ PhotoShovel dto.PhotoShovelConfig }{}
+	// TODO: Perhaps just return the config struct object?
+	config := struct{ PhotoShovel dto.PhotoShovelConfig 
+					  AmazonCloudDrive dto.AmazonCloudDriveConfig
+					  PicasaWeb dto.PicasaWebConfig }{}
 	
 	err := sconf.Must(&config).Read(ini.File(*configFilePath))
 	
-	return &config.PhotoShovel, err
+	return &config.PhotoShovel, &config.AmazonCloudDrive, &config.PicasaWeb, err
 }
 
 func main() {
@@ -41,10 +47,22 @@ func main() {
 		"./photoshovel.config",
 		"Path to PhotoShovel configuration file.  Default is './photoshovel.config'.")
 	
+	sourceOptPtr := flag.String(
+		"source",
+		"picasaweb",
+		"Source of photo migration. [picasaweb|amazonclouddrive]")
+	
+	targetOptPtr := flag.String(
+		"target",
+		"amazonclouddrive",
+		"Source of photo migration. [picasaweb|amazonclouddrive]")
+	
 	flag.Parse()
 	loggers["Info"].Println("Loading config file from: ", *configOptPtr)
 
-	config, err := LoadConfig(configOptPtr)
+	photoShovelConfig, amazonCloudDriveConfig, picasaWebConfig, err := LoadConfig(configOptPtr)
+	_ = amazonCloudDriveConfig
+	_ = picasaWebConfig
 	if err != nil {
 		panicString := fmt.Sprintf(
 			"Unable to read config file %q due to %q.  Aborting PhotoShovel.",
@@ -52,10 +70,12 @@ func main() {
 		panic(panicString)
 	}
 
-	loggers, logWriters = logging.LogInit(config)
+	loggers, logWriters = logging.LogInit(photoShovelConfig)
 	logging.CreateLogFlusher(logWriters, loggers)
 	loggers["Info"].Printf("Started PhotoShovel, v.%s.\n", VERSION)
-	loggers["Info"].Printf("Loaded configuration: %q\n", config)
+	loggers["Info"].Printf("Loaded PhotoShovel configuration: %q\n", photoShovelConfig)
+	loggers["Info"].Println("Source: ", *sourceOptPtr)
+	loggers["Info"].Println("Target: ", *targetOptPtr)
 
 	for _, logWriter := range logWriters {
 		// Have logs written to disk before exiting.
@@ -92,6 +112,6 @@ func main() {
 	// TODO: Downloader and Uploader Go routines will consume terminate sentinel 
 	// TODO: jobs and stop running.
 	
-	// TODO: Once all Downloader adn Uploader Go routines have exited, end the 
+	// TODO: Once all Downloader and Uploader Go routines have exited, end the 
 	// TODO: program.
 }
